@@ -6,8 +6,6 @@ ro.millet.netlink=31
 persist.sys.brightmillet.enable=true
 persist.sys.millet.handshake=true
 persist.sys.millet.newversion=true
-#mi_sw_sync改善因画面渲染不同步导致的丢帧卡顿问题
-debug.sf.mi_asynchronous_re.enable=true
 #Log
 persist.logd.limit=OFF
 persist.logd.size=65536
