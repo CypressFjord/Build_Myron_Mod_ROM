@@ -306,6 +306,8 @@
     <!-- whether support dbam -->
     <string name="support_bt_dbam">myron</string>
     <string name="support_audio_share_ui">myron</string>
+    <!-- whether support forbidden cancel discovery for IDM when settings discovering on forground -->
+    <string name="support_forbidden_IDM_cancel_discovery">myron</string>
 <!-- Bluethooth END -->
 
 <!-- Display BEGIN -->
@@ -538,6 +540,9 @@
         <item>com.snapchat.android</item>
         <item>com.xhey.xcamera</item>
         <item>com.ss.android.ugc.aweme.lite</item>
+        <!-- MIUI ADD: Camera_MIUICameraFrame -->
+        <item>com.miui.powerinsight</item>
+        <!-- END Camera_MIUICameraFrame -->
     </string-array>
     <!--These app can only access physical camera -->
     <string-array name="camera_hide_logical_package_list">
