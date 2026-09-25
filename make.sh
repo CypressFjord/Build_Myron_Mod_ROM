@@ -320,36 +320,19 @@ else
 fi
 End_Time 添加REDMIK90ProMaxPatch
 End_Time 修改myron.xml
-#检测并添加WRITE_MEDIA_STORAGE权限
-echo -e "${Red}- 开始检测并添加WRITE_MEDIA_STORAGE权限${NC}"
+#为6.7版本相机添加START_TASKS_FROM_RECENTS权限
+echo -e "${Red}- 开始为6.7版本相机添加START_TASKS_FROM_RECENTS权限${NC}"
 Start_Time
 privapp_xml="$GITHUB_WORKSPACE"/images/product/etc/permissions/privapp-permissions-product.xml
-if [ -f "$privapp_xml" ]; then
-    if awk '
-        /<privapp-permissions package="com.miui.securitycenter">/ { inblock=1 }
-        inblock && /<permission name="android.permission.WRITE_MEDIA_STORAGE" \/>/ { found=1; exit }
-        inblock && /<\/privapp-permissions>/ { exit }
-        END { exit !found }
-    ' "$privapp_xml"; then
-        echo -e "${Yellow}- 跳过: WRITE_MEDIA_STORAGE权限存在${NC}"
-    else
-        awk '
-        /<privapp-permissions package="com.miui.securitycenter">/ { inblock=1; found=0 }
-        inblock && /<permission name="android.permission.WRITE_MEDIA_STORAGE" \/>/ { found=1 }
-        inblock && /<\/privapp-permissions>/ {
-            if (!found) {
-                print "      <permission name=\"android.permission.WRITE_MEDIA_STORAGE\" />"
-            }
-            inblock=0
-        }
-        { print }
-        ' "$privapp_xml" > "${privapp_xml}.tmp" && mv "${privapp_xml}.tmp" "$privapp_xml"
-        echo -e "${Green}- 已添加WRITE_MEDIA_STORAGE权限${NC}"
-    fi
+if [ -f "$privapp_xml" ] && ! sed -n '/<privapp-permissions package="com.android.camera">/,/<\/privapp-permissions>/p' "$privapp_xml" | grep -qF 'START_TASKS_FROM_RECENTS'; then
+    sed -i '/<privapp-permissions package="com.android.camera">/,/<\/privapp-permissions>/{
+        /<\/privapp-permissions>/i\      <permission name="android.permission.START_TASKS_FROM_RECENTS" />
+    }' "$privapp_xml"
+    echo -e "${Green}- 已为6.7版本相机添加START_TASKS_FROM_RECENTS权限${NC}"
 else
-    echo -e "${Yellow}- 警告: 未找到privapp-permissions-product.xml，跳过此步骤${NC}"
+    echo -e "${Yellow}- 跳过: XML文件不存在或START_TASKS_FROM_RECENTS权限已存在${NC}"
 fi
-End_Time 检测并添加WRITE_MEDIA_STORAGE权限
+End_Time 为6.7版本相机添加START_TASKS_FROM_RECENTS权限
 #合并替换MiuiCamera相关文件
 echo -e "${Red}- 开始合并替换MiuiCamera相关文件${NC}"
 Start_Time
