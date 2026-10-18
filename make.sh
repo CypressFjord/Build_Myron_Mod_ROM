@@ -355,52 +355,6 @@ else
     echo -e "${Yellow}- MiuiCamera.apk合并失败，保留原文件${NC}"
 fi
 End_Time 合并替换MiuiCamera相关文件
-##内置水龙优化
-echo -e "${Red}- 开始内置水龙优化${NC}"
-Start_Time
-#处理cpq调速器
-echo -e "${Red}- 开始处理cpq调速器${NC}"
-Start_Time
-RC_FILE="$GITHUB_WORKSPACE/images/vendor/etc/init/hw/init.qti.kernel.rc"
-ANCHOR='write /sys/block/sda/queue/scheduler cpq'
-if [ -f "$RC_FILE" ] && grep -qF 'iosched/read_expire 4' "$RC_FILE"; then
-    echo -e "${Yellow}- 跳过: cpq调速器参数已处理过${NC}"
-elif [ -f "$RC_FILE" ] && grep -qF "$ANCHOR" "$RC_FILE"; then
-    sed -i "/${ANCHOR//\//\\/}/a\\
-    write /sys/block/sda/queue/iosched/prio_aging_expire 200" "$RC_FILE"
-    echo -e "${Green}- 成功处理cpq调速器${NC}"
-else
-    echo -e "${Yellow}- 警告: 未找到cpq锚点或文件不存在${NC}"
-fi
-End_Time 处理cpq调速器
-#关闭F2FS iostat减少读写时锁争用
-Start_Time
-echo -e "${Red}- 开始关闭F2FS iostat减少读写时锁争用${NC}"
-INIT_RC="$GITHUB_WORKSPACE"/images/system/system/etc/init/hw/init.rc
-grep -qF "iostat" "$INIT_RC" || echo -e "${Yellow}- 警告: 未找到iostat相关行${NC}"
-sed -i '/write \/dev\/sys\/fs\/by-name\/userdata\/iostat_period_ms 1000/d' "$INIT_RC"
-sed -i '/write \/dev\/sys\/fs\/by-name\/userdata\/iostat_enable 1/d' "$INIT_RC"
-echo -e "${Green}- 已关闭F2FS iostat减少读写时锁争用${NC}"
-End_Time 关闭F2FS iostat减少读写时锁争用
-#Amktiao的ZRAM压缩算法优化
-Start_Time
-echo -e "${Red}- 开始Amktiao的ZRAM压缩算法优化${NC}"
-zram_rc="$GITHUB_WORKSPACE"/images/system/system/etc/init/hw/init.rc
-perfinit="$GITHUB_WORKSPACE"/images/system_ext/etc/perfinit.conf
-if [ -f "$zram_rc" ] && ! grep -qF 'Amktiao ZRAM opt Add' "$zram_rc"; then
-    sed -i '/# System server manages zram writeback/a\
-    # Amktiao ZRAM opt Add\
-    write /proc/sys/vm/page-cluster 0\
-    # Amktiao ZRAM opt End' "$zram_rc" && echo -e "${Green}- init.rc已成功修改${NC}"
-fi
-if [ -f "$perfinit" ] && ! grep -q '"comp_algo"' "$perfinit"; then
-    sed -i '/"swap_on": 1,/{p; s/.*/        "comp_algo": "lz4",/}' "$perfinit"
-    python3 -c "import json; json.load(open('$perfinit'))" 2>/dev/null \
-        && echo -e "${Green}- perfinit.conf已成功修改${NC}" \
-        || echo -e "${Yellow}- 严重警告: JSON校验失败${NC}"
-fi
-End_Time Amktiao的ZRAM压缩算法优化
-End_Time 内置水龙优化
 ##处理IMG文件
 echo -e "${Red}- 开始处理IMG文件${NC}"
 Start_Time
