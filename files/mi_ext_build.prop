@@ -3,9 +3,7 @@
 ro.sf.lcd_density=480
 persist.miui.density_v2=480
 ro.millet.netlink=31
-persist.sys.brightmillet.enable=true
-persist.sys.millet.handshake=true
-persist.sys.millet.newversion=true
+persist.sys.powmillet.enable=true
 #FPS
 persist.vendor.disable_idle_fps.threshold=10
 ro.vendor.display.primary_idle_refresh_rate=60,1:10
@@ -14,7 +12,11 @@ ro.vendor.mi_sf.aod_mode_ddic_refresh_rate=1
 persist.sys.smartpower.limit.normal.max.refresh.rate.enable=true
 persist.sys.smartpower.limit.normal.max.refresh.rate.support=120
 persist.sys.smartpower.limit.max.refresh.rate=120
-#扬声器清洁
+#游戏音效
+ro.vendor.audio.game.effect=true
+#快充加速
+persist.vendor.accelerate.charge=true
+#扬声器清理
 ro.vendor.audio.clean_speaker=true
 #Bootloader
 ro.boot.flash.locked=1
